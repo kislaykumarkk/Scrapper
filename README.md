@@ -1,5 +1,5 @@
 # Scrapper
 
-#A web scrapper to get WBUT result
+A web scrapper to get WBUT result
 
-#Initial Bugs may exist
+Initial Bugs may exist
