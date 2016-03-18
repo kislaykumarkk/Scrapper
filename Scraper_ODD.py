@@ -8,16 +8,29 @@ import sys
 import os
 import pdfkit
 
-#Starting Roll No.
-roll = 10400212001
+# The data Entry and Populate Section
+roll_list = []   #Blank Roll List
+initial_roll = 10400212001   #Enter the starting Roll Number of General Students
+count = 135		     #Enter the approx count of students
+while count > 0:
+	roll_list.append(initial_roll)    #Populate List
+	initial_roll = initial_roll + 1
+	count = count -1
 
-#No of iterations
-i = 3
+lateral_roll = 10400213122   #Enter the starting Roll Number of Lateral Students
+count = 25		     #Enter the approx count of students
+while count > 0:
+	roll_list.append(lateral_roll)    #Populate List
+	lateral_roll = lateral_roll + 1
+	count = count -1
+
+# End of Data Entry And Populate Section
+
 csvout = csv.writer(open("results.csv", "w"))
-csvout.writerow(("SGPA",""))
+csvout.writerow(("Roll","Name","SGPA"))
 
 
-while i > 0:
+for roll in roll_list:
 	#Chrome driver to open Browser
 	#Donload from https://sites.google.com/a/chromium.org/chromedriver/downloads
 	#Add correct path for ChromeDriver here
@@ -77,15 +90,24 @@ while i > 0:
 	path = '/home/kaustav/Result/' + str(roll) +'.html'
 	
 	#Fetching the tables
+	name = ""
+	roll_no = ""
+	sgpa = 0.0
 	soup4tables=soup.find_all('table')
 	for tab in soup4tables:
+		soup4rows=tab.find_all('tr')
+		if(len(soup4rows) ==3):
+			str1 = str(soup4rows[1])
+			name = str1[((str1.index("Name :"))+7):str1.index("</th>\n<th style=")].strip()
+			roll_no1 = str1[((str1.index("Roll No. :"))+11):str1.index("</th>\n</tr>")].strip()
+			roll_no = long(roll_no1)
 		soup4rows=tab.find_all('tr')
 		if(len(soup4rows) ==2):
 			str1 = str(soup4rows[0])
 			str2 = str1[((str1.index("SEMESTER :"))+10):str1.index("</td>")].strip()
 			sgpa = float(str2)
-			print sgpa
-			csvout.writerow((sgpa,""))
+	csvout.writerow((roll_no,name,sgpa))
+		
 	
 	with open(path, 'w') as f:
 		for line in soup.prettify('utf-8',):
@@ -100,9 +122,8 @@ while i > 0:
 	'''
 	driver.quit() # closes the webbrowser
     
-	#os.remove(path)
-	roll = roll+1
-	i = i - 1
+	os.remove(path)
+	
 
 
 #Status 
